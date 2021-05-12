@@ -31,44 +31,46 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     
     return [];
   });
-  const prevCartRef = useRef<Product[]>();
+  // const prevCartRef = useRef<Product[]>();
 
-  useEffect(() => {
-    prevCartRef.current = cart;
-  })
-  const prevCartValue = prevCartRef.current ?? cart;
+  // useEffect(() => {
+  //   prevCartRef.current = cart;
+  // })
+  // const prevCartValue = prevCartRef.current ?? cart;
 
-  useEffect(() => {
-    if(prevCartValue !== cart){
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
+  // useEffect(() => {
+  //   if(prevCartValue !== cart){
+  //     localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
 
-    }
+  //   }
 
-  },[cart, prevCartValue])
+  // },[cart, prevCartValue])
   const addProduct = async (productId: number) => {
 
     try {
-      const updatedCart = [...cart]
+      const cartUpdated = [...cart]
 
-      const productExists = updatedCart.find(product => product.id === productId)
+      const checkProduct = cartUpdated.find(product => product.id === productId)
       const stock = await api.get(`/stock/${productId}`);
       const stockAmount = stock.data.amount
-      const currentAmount = productExists ? productExists.amount : 0
+
+      const currentAmount = checkProduct ? checkProduct.amount : 0
       const amount = currentAmount + 1
       if(amount > stockAmount){
         toast.error('Quantidade solicitada fora de estoque');
         return
       }
-      if(productExists){
-        productExists.amount = amount;
+
+      if(checkProduct){
+        checkProduct.amount = amount;
       } else {
         const product = await api.get(`products/${productId}`)
-       
-        const newProduct = {...product.data, amount: 1}
-        updatedCart.push(newProduct)
+        const returnedProduct = {...product.data, amount: 1}
+        cartUpdated.push(returnedProduct)
       }
-      setCart(updatedCart)
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart))
+      
+      setCart(cartUpdated)
+      
     } catch {
       toast.error('Quantidade solicitada fora de estoque');
     }
@@ -84,7 +86,6 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       if(removedIndex >0){
         newCart.splice(removedIndex, 1);
         setCart(newCart)
-
       }else {
         throw Error()
       }

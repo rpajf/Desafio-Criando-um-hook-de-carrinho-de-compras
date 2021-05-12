@@ -84,6 +84,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       if(removedIndex >0){
         newCart.splice(removedIndex, 1);
         setCart(newCart)
+        // localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
 
       }else {
         throw Error()

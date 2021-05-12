@@ -31,20 +31,20 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     
     return [];
   });
-  const prevCartRef = useRef<Product[]>();
+  // const prevCartRef = useRef<Product[]>();
 
-  useEffect(() => {
-    prevCartRef.current = cart;
-  })
-  const prevCartValue = prevCartRef.current ?? cart;
+  // useEffect(() => {
+  //   prevCartRef.current = cart;
+  // })
+  // const prevCartValue = prevCartRef.current ?? cart;
 
-  useEffect(() => {
-    if(prevCartValue !== cart){
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
+  // useEffect(() => {
+  //   if(prevCartValue !== cart){
+  //     localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
 
-    }
+  //   }
 
-  },[cart, prevCartValue])
+  // },[cart, prevCartValue])
   const addProduct = async (productId: number) => {
 
     try {
@@ -63,9 +63,8 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         productExists.amount = amount;
       } else {
         const product = await api.get(`products/${productId}`)
-       
-        const newProduct = {...product.data, amount: 1}
-        updatedCart.push(newProduct)
+        const returnedProduct = {...product.data, amount: 1}
+        updatedCart.push(returnedProduct)
       }
       setCart(updatedCart)
       localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart))
@@ -84,6 +83,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       if(removedIndex >0){
         newCart.splice(removedIndex, 1);
         setCart(newCart)
+        // localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart))
 
       }else {
         throw Error()

@@ -48,27 +48,33 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const addProduct = async (productId: number) => {
 
     try {
-      const updatedCart = [...cart]
+      const cartUpdated = [...cart]
 
-      const productExists = updatedCart.find(product => product.id === productId)
-      const stock = await api.get(`/stock/${productId}`);
+      const checkProduct = cartUpdated.find(product => product.id === productId)
+      const stock = await api.get(`/stock/${productId} `);
       const stockAmount = stock.data.amount
-      const currentAmount = productExists ? productExists.amount : 0
+
+      const currentAmount = checkProduct ? checkProduct.amount : 0
       const amount = currentAmount + 1
+
       if(amount > stockAmount){
         toast.error('Quantidade solicitada fora de estoque');
         return
       }
-      if(productExists){
-        productExists.amount = amount;
+      if(checkProduct){
+        checkProduct.amount = amount;
       } else {
         const product = await api.get(`products/${productId}`)
-       
-        const newProduct = {...product.data, amount: 1}
-        updatedCart.push(newProduct)
+        const returnedProduct = {...product.data, amount: 1}
+        cartUpdated.push(returnedProduct)
       }
-      setCart(updatedCart)
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart))
+      
+
+      setCart(cartUpdated)
+
+
+      
+      
     } catch {
       toast.error('Quantidade solicitada fora de estoque');
     }
@@ -79,15 +85,15 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       const newCart = [...cart]
       
       
-      const removedIndex = newCart.findIndex(product => product.id === productId)
+      const removed = newCart.findIndex(product => product.id === productId)
 
-      if(removedIndex >0){
-        newCart.splice(removedIndex, 1);
+      if(removed >=0){
+        newCart.splice(removed, 1);
         setCart(newCart)
-
       }else {
         throw Error()
       }
+
 
       
 
@@ -110,10 +116,6 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         toast.error('Quantidade solicitada fora de estoque');
         return
 
-      }
-      if(amount < 1){
-        toast.error('Erro na remoção de produto')
-        return
       }
       const cartUpdated = [...cart]
       const productExists = cartUpdated.find(product => product.id === productId)
